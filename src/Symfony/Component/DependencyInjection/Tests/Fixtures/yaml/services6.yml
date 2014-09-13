@@ -35,3 +35,11 @@ services:
     decorator_service_with_name:
         decorates: decorated
         decoration_inner_name: decorated.pif-pouf
+    service_with_layer:
+        layers:
+            - layer1
+    service_with_layers:
+        layers:
+            - layer1
+            - layer2
+    service_with_default_layer:

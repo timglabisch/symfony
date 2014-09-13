@@ -29,6 +29,7 @@ class Definition
     private $factoryMethod;
     private $factoryService;
     private $scope = ContainerInterface::SCOPE_CONTAINER;
+    private $layers = array(ContainerInterface::LAYER_DEFAULT);
     private $properties = array();
     private $calls = array();
     private $configurator;
@@ -542,6 +543,34 @@ class Definition
     public function getFile()
     {
         return $this->file;
+    }
+
+    /**
+     * Sets the layer of the service
+     *
+     * @param string $layer
+     *
+     * @return Definition The current instance
+     *
+     * @api
+     */
+    public function setLayers(array $layers)
+    {
+        $this->layers = $layers;
+
+        return $this;
+    }
+
+    /**
+     * Returns the layer of the service
+     *
+     * @return array
+     *
+     * @api
+     */
+    public function getLayers()
+    {
+        return $this->layers;
     }
 
     /**

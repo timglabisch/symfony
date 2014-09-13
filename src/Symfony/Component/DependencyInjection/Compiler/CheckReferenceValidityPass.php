@@ -13,6 +13,7 @@ namespace Symfony\Component\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Exception\InvalidLayerException;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
@@ -79,6 +80,10 @@ class CheckReferenceValidityPass implements CompilerPassInterface
             $this->validateReferences($definition->getArguments());
             $this->validateReferences($definition->getMethodCalls());
             $this->validateReferences($definition->getProperties());
+
+            $this->validateLayer($definition->getArguments());
+            $this->validateLayer($definition->getMethodCalls());
+            $this->validateLayer($definition->getProperties());
         }
     }
 
@@ -146,6 +151,39 @@ class CheckReferenceValidityPass implements CompilerPassInterface
 
         if (!in_array($scope, $this->currentScopeAncestors, true)) {
             throw new ScopeCrossingInjectionException($this->currentId, $this->currentScope, $id, $scope);
+        }
+    }
+
+    /**
+     * Validates the scope of a single Reference.
+     *
+     * @param Reference  $reference
+     * @param Definition $definition
+     *
+     * @throws ScopeWideningInjectionException when the definition references a service of a narrower scope
+     * @throws ScopeCrossingInjectionException when the definition references a service of another scope hierarchy
+     */
+    private function validateLayer(array $arguments)
+    {
+        foreach ($arguments as $argument) {
+            if (is_array($argument)) {
+                $this->validateLayer($argument);
+                return;
+            }
+
+            if (!($argument instanceof Reference)) {
+                return;
+            }
+
+            /** @var $currentDefinition Definition */
+            $currentDefinition = $this->currentDefinition;
+
+            /** @var $targetDefinition Definition */
+            $targetDefinition = $this->getDefinition((string) $argument);
+
+            if (!$this->container->isValidLayer($currentDefinition, $targetDefinition)) {
+                throw new InvalidLayerException($currentDefinition, $this->currentId, $targetDefinition, $argument->__toString());
+            }
         }
     }
 

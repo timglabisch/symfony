@@ -95,6 +95,13 @@ class YamlDumper extends Dumper
             $code .= "        tags:\n".$tagsCode;
         }
 
+        if ($definition->getLayers() !== array(ContainerInterface::LAYER_DEFAULT)) {
+            $code .= "        layers:\n";
+            foreach ($definition->getLayers() as $layer) {
+                $code .= sprintf("            - %s\n", $layer);
+            }
+        }
+
         if ($definition->getFile()) {
             $code .= sprintf("        file: %s\n", $definition->getFile());
         }

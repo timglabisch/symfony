@@ -160,6 +160,14 @@ class XmlDumper extends Dumper
             }
         }
 
+        if ($definition->getLayers() != array(ContainerInterface::LAYER_DEFAULT)) {
+            foreach ($definition->getLayers() as $layer) {
+                $layerTag = $this->document->createElement('layer');
+                $layerTag->setAttribute('name', $layer);
+                $service->appendChild($layerTag);
+            }
+        }
+
         if ($definition->getFile()) {
             $file = $this->document->createElement('file');
             $file->appendChild($this->document->createTextNode($definition->getFile()));

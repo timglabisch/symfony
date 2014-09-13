@@ -218,6 +218,9 @@ class XmlFileLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($services['factory_service']->getClass());
         $this->assertEquals('getInstance', $services['factory_service']->getFactoryMethod());
         $this->assertEquals('baz_factory', $services['factory_service']->getFactoryService());
+        $this->assertEquals(array('layer1'), $services['service_with_layer']->getLayers());
+        $this->assertEquals(array('layer1', 'layer2'), $services['service_with_layers']->getLayers());
+        $this->assertEquals(array(ContainerInterface::LAYER_DEFAULT), $services['service_with_default_layer']->getLayers());
 
         $this->assertTrue($services['request']->isSynthetic(), '->load() parses the synthetic flag');
         $this->assertTrue($services['request']->isSynchronized(), '->load() parses the synchronized flag');

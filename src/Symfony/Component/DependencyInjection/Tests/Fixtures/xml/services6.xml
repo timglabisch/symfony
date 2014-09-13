@@ -52,5 +52,13 @@
     <service id="request" class="Request" synthetic="true" synchronized="true" lazy="true"/>
     <service id="decorator_service" decorates="decorated" />
     <service id="decorator_service_with_name" decorates="decorated" decoration-inner-name="decorated.pif-pouf"/>
+    <service id="service_with_layer">
+      <layer name="layer1" />
+    </service>
+    <service id="service_with_layers">
+      <layer name="layer1" />
+      <layer name="layer2" />
+    </service>
+    <service id="service_with_default_layer" />
   </services>
 </container>

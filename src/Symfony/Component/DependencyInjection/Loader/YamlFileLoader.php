@@ -234,6 +234,14 @@ class YamlFileLoader extends FileLoader
             }
         }
 
+        if (isset($service['layers']) && !empty($service['layers'])) {
+            if (!is_array($service['layers'])) {
+                throw new InvalidArgumentException(sprintf('Parameter "layers" must be an array for service "%s" in %s.', $id, $file));
+            }
+
+            $definition->setLayers($service['layers']);
+        }
+
         if (isset($service['decorates'])) {
             $renameId = isset($service['decoration_inner_name']) ? $service['decoration_inner_name'] : null;
             $definition->setDecoratedService($service['decorates'], $renameId);

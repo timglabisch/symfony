@@ -41,6 +41,42 @@ class CheckReferenceValidityPassTest extends \PHPUnit_Framework_TestCase
         $this->process($container);
     }
 
+    public function testDefaultLayer()
+    {
+        $container = new ContainerBuilder();
+        $container->register('a')->addArgument(new Reference('b'));
+        $container->register('b')->setLayers(array(ContainerInterface::LAYER_DEFAULT));
+
+        $this->process($container);
+    }
+
+
+    public function testLayoutStructure()
+    {
+        $container = new ContainerBuilder();
+        $container->getLayerRuleBuilder()
+            ->layerCanDependOn('domain', 'infrastructure')
+        ;
+        $container->register('a')->setLayers(array('domain'))->addArgument(new Reference('b'));
+        $container->register('b')->setLayers(array('infrastructure'));
+
+        $this->process($container);
+    }
+
+    public function testLayoutStructureDeep()
+    {
+        $container = new ContainerBuilder();
+        $container->getLayerRuleBuilder()
+            ->layerCanDependOn('a', 'b')
+            ->layerCanDependOn('b', 'c')
+        ;
+        $container->register('a')->setLayers(array('a'))->addArgument(new Reference('b'));
+        $container->register('b')->setLayers(array('b'))->addArgument(new Reference('c'));
+        $container->register('c')->setLayers(array('c'));
+
+        $this->process($container);
+    }
+
     public function testProcessIgnoresCrossScopeHierarchyReferenceIfNotStrict()
     {
         $container = new ContainerBuilder();

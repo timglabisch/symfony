@@ -203,6 +203,15 @@ class XmlFileLoader extends FileLoader
             $definition->addTag($tag->getAttribute('name'), $parameters);
         }
 
+        $layers = array();
+        foreach ($this->getChildren($service, 'layer') as $layer) {
+            $layers[] = $layer->getAttribute('name');
+        }
+
+        if (!empty($layers)) {
+            $definition->setLayers($layers);
+        }
+
         if ($value = $service->getAttribute('decorates')) {
             $renameId = $service->hasAttribute('decoration-inner-name') ? $service->getAttribute('decoration-inner-name') : null;
             $definition->setDecoratedService($value, $renameId);

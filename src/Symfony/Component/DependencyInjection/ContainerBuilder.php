@@ -22,6 +22,7 @@ use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Config\Resource\ResourceInterface;
+use Symfony\Component\DependencyInjection\LayerRule\LayerRuleBuilder;
 use Symfony\Component\DependencyInjection\LazyProxy\Instantiator\InstantiatorInterface;
 use Symfony\Component\DependencyInjection\LazyProxy\Instantiator\RealServiceInstantiator;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -83,6 +84,11 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      * @var ExpressionLanguage|null
      */
     private $expressionLanguage;
+
+    /**
+     * @var LayerRuleBuilder
+     */
+    private $layerRuleBuilder;
 
     /**
      * Sets the track resources flag.
@@ -1078,6 +1084,31 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
         return $services;
     }
 
+    public function getLayerRuleBuilder()
+    {
+        if ($this->layerRuleBuilder === null) {
+            $this->layerRuleBuilder = new LayerRuleBuilder();
+            $this->layerRuleBuilder
+                ->layerCanDependOn('default', 'default')
+            ;
+        }
+
+        return $this->layerRuleBuilder;
+    }
+
+    /**
+     * @param Definition $targetDefinition
+     * @param Definition $targetDependencyDefinition
+     */
+    public function isValidLayer(Definition $targetDefinition = null, Definition $targetDependencyDefinition = null)
+    {
+        if ($targetDefinition === null || $targetDependencyDefinition === null) {
+            return true;
+        }
+
+        return $this->getLayerRuleBuilder()->build()->isValid($targetDefinition, $targetDependencyDefinition);
+    }
+
     /**
      * Retrieves the currently set proxy instantiator or instantiates one.
      *
@@ -1166,4 +1197,5 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
 
         return $this->expressionLanguage;
     }
+
 }

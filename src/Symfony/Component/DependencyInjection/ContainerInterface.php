@@ -30,6 +30,7 @@ interface ContainerInterface
     const IGNORE_ON_INVALID_REFERENCE    = 3;
     const SCOPE_CONTAINER                = 'container';
     const SCOPE_PROTOTYPE                = 'prototype';
+    const LAYER_DEFAULT                  = 'default';
 
     /**
      * Sets a service.

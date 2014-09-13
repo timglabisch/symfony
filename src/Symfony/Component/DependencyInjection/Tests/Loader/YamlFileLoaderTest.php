@@ -12,6 +12,7 @@
 namespace Symfony\Component\DependencyInjection\Tests\Loader;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\Config\Loader\Loader;
@@ -119,6 +120,9 @@ class YamlFileLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(array('setBar', array()), array('setBar', array()), array('setBar', array(new Expression('service("foo").foo() ~ parameter("foo")')))), $services['method_call1']->getMethodCalls(), '->load() parses the method_call tag');
         $this->assertEquals(array(array('setBar', array('foo', new Reference('foo'), array(true, false)))), $services['method_call2']->getMethodCalls(), '->load() parses the method_call tag');
         $this->assertEquals('baz_factory', $services['factory_service']->getFactoryService());
+        $this->assertEquals(array('layer1'), $services['service_with_layer']->getLayers());
+        $this->assertEquals(array('layer1', 'layer2'), $services['service_with_layers']->getLayers());
+        $this->assertEquals(array(ContainerInterface::LAYER_DEFAULT), $services['service_with_default_layer']->getLayers());
 
         $this->assertTrue($services['request']->isSynthetic(), '->load() parses the synthetic flag');
         $this->assertTrue($services['request']->isSynchronized(), '->load() parses the synchronized flag');
